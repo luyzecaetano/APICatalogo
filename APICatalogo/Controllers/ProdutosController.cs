@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class ProdutosController : ControllerBase
 {
@@ -16,6 +16,19 @@ public class ProdutosController : ControllerBase
         _context = context;
     }
 
+    // /api/produtos/primeiro
+    [HttpGet("primeiro")]
+    public ActionResult<Produto> GetPrimeiro()
+    {
+        var produto = _context.Produtos.FirstOrDefault();
+        if (produto is null)
+        {
+            return NotFound("Produtos não encontrados.");
+        }
+        return produto;
+    }
+
+    // /api/produtos
     [HttpGet]
     public ActionResult<IEnumerable<Produto>> Get()
     {
@@ -27,9 +40,13 @@ public class ProdutosController : ControllerBase
         return produtos;
     }
 
-    [HttpGet("{id:int}", Name = "ObterProduto")]
-    public ActionResult<Produto> Get(int id)
+    // /api/produtos/id
+    [HttpGet("{id}/{nome}", Name = "ObterProduto")]
+    public ActionResult<Produto> Get(int id, string nome)
     {
+
+        var parametro = nome;
+
         var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
         if (produto is null)
         {
@@ -38,6 +55,7 @@ public class ProdutosController : ControllerBase
         return produto;
     }
 
+    // /api/produtos
     [HttpPost]
     public ActionResult Post(Produto produto)
     {
@@ -65,7 +83,6 @@ public class ProdutosController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-
     public ActionResult Delete(int id)
     {
         var produto = _context.Produtos.FirstOrDefault(p=>p.ProdutoId == id);
